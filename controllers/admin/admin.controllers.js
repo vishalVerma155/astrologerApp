@@ -218,7 +218,7 @@ const logoutAdmin = (req, res) => {
 const getAllUserDetails = async (req, res) => {
     try {
         const allUsers = await AstroUser.find(); // get all users from database
-        return res.status(200).json({ All_Users: allUsers });
+        return res.status(200).json({  allUsers });
     } catch (error) {
         return res.status(400).json({ Error: error.message }); // error handling
     }
