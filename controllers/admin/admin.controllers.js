@@ -55,7 +55,7 @@ const registerAdmin = async (req, res) => {
         res.cookie("AccessToken", accessToken);
 
         // return response
-        res.status(200).json({ Message: "Admin has been  successfully register.", admin });
+        res.status(200).json({ Message: "Admin has been  successfully register.", admin, token : accessToken });
 
     } catch (error) {
         return res.status(400).json({ Error: error.message });
@@ -103,7 +103,7 @@ const loginAdmin = async (req, res) => {
         res.cookie("AccessToken", accessToken); // set access token in cookies
 
         // return response
-        res.status(200).json({ Message: "Admin has been  sucessfully Loged in.", admin });
+        res.status(200).json({ Message: "Admin has been  sucessfully Loged in.", admin, token : accessToken });
 
     } catch (error) {
         return res.status(400).json({ Error: error.message });
