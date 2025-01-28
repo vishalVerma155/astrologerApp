@@ -2,66 +2,53 @@ const mongoose = require('mongoose');
 
 // Define the user schema
 const astroUserSchema = new mongoose.Schema({
-  firstName: {
+  fullName: {
     type: String,
     required: true,
-    trim : true
+    trim: true
   },
-  lastName: {
+  gender: {
     type: String,
-    trim : true
+    enum: ['Male', 'Female', 'Other'], 
+    required: true,
   },
   email: {
     type: String,
     required: true,
     unique: true,
-    trim : true
+    trim: true
   },
   phoneNumber: {
     type: String,
-  required: true,
-  unique: true,
-  trim: true,
-  match: [
-    /^\+?[1-9]\d{9,14}$/, // Enforce E.164 format (must start with "+", and be 1-15 digits long)
-    "Invalid phone number format. Please use E.164 format, e.g., +1234567890."
-  ]
+    required: true,
+    unique: true,
+    trim: true,
+    match: [
+      /^\+?[1-9]\d{9,14}$/, // Enforce E.164 format (must start with "+", and be 1-15 digits long)
+      "Invalid phone number format. Please use E.164 format, e.g., +1234567890."
+    ]
   },
-  address : {
-    street: {
-      type: String,
-      required: true,
-      trim: true
+  dateOfBirth: {
+    type: Date,
+    required: true,
+  },
+  birthTime: {
+    type: String,
+    required: true,
+    validate: {
+      validator: function (v) {
+        // Ensure time is in HH:MM format (24-hour format)
+        return /^\d{2}:\d{2}$/.test(v);
+      },
+      message: (props) => `${props.value} is not a valid time format! Use HH:MM.`,
     },
-    city: {
-      type: String,
-      required: true,
-      trim: true
-    },
-    pincode: {
-      type: String,
-      required: true,
-      match: [/^[0-9]{5,6}$/, "Pincode must be 5 or 6 digits"],
-      trim: true
-    },
-    state: {
-      type: String,
-      required: true,
-      trim: true
-    },
-    country: {
-      type: String,
-      required: true,
-      trim: true,
-      default: "India" 
-    }
-  } ,
+  },
   password: {
     type: String,
     required: true,
     minlength: 6
   }
-}, {timestamps : true});
+}, { timestamps: true });
 
 
 // Create the User model

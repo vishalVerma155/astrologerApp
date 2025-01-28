@@ -1,19 +1,19 @@
 const AstroUser = require('../../models/user.model.js');
-const {hashPassword, comparePassword} = require('../../utils/bcrypt.js')
+const { hashPassword, comparePassword } = require('../../utils/bcrypt.js')
 const generateJWT = require('../../utils/jwt.js')
 
 // user register controllers
 const registerUser = async (req, res) => {
 
     try {
-        const { firstName, email, phoneNumber, password, lastName,street,city,pincode,state,country } = req.body;
+        const { fullName, email, phoneNumber, password, gender, dateOfBirth, birthTime } = req.body;
 
         // check blank fields
-        const isBlank = [firstName, email,  password].some(field => field.trim() === "");
+        const isBlank = [fullName, email, phoneNumber, password, gender, dateOfBirth, birthTime].some(field => field.trim() === "");
 
 
         if (isBlank) {
-            return res.status(401).json({ Message: "Name, email, phoneNumber, password are compulsary" });
+            return res.status(401).json({ Message: "All fields are compulsary" });
         }
 
         // check if user is already existed
@@ -27,18 +27,13 @@ const registerUser = async (req, res) => {
         const hashedPassword = await hashPassword(password);
         // create user
         const newUser = new AstroUser({
-            firstName,
-            lastName,
+            fullName,
             email,
             phoneNumber,
             password: hashedPassword,
-            address : {
-                street,
-                city,
-                state,
-                country,
-                pincode
-            }
+            gender,
+            dateOfBirth,
+            birthTime
         })
 
         // save user
@@ -61,7 +56,7 @@ const registerUser = async (req, res) => {
         res.cookie("AccessToken", accessToken);
 
         // return response
-        res.status(200).json({ Message: "User has been  successfully register.", astroUser });
+        res.status(200).json({ Message: "User has been  successfully register.", astroUser, token : accessToken });
 
     } catch (error) {
         return res.status(400).json({ Error: error.message });
@@ -83,7 +78,7 @@ const loginUser = async (req, res) => {
         }
 
         // check if user is existed
-        const astroUser = await AstroUser.findOne({ $or: [{ phoneNumber : userName }, { email: userName }] });
+        const astroUser = await AstroUser.findOne({ $or: [{ phoneNumber: userName }, { email: userName }] });
 
         if (!astroUser) {
             return res.status(401).json({ Message: "User is not existed." });
@@ -108,7 +103,7 @@ const loginUser = async (req, res) => {
         res.cookie("AccessToken", accessToken);
 
         // return response
-        res.status(200).json({ Message: "User has been  sucessfully Loged in.", astroUser });
+        res.status(200).json({ Message: "User has been  sucessfully Loged in.", astroUser, token : accessToken });
 
     } catch (error) {
         return res.status(400).json({ Error: error.message });
@@ -121,7 +116,7 @@ const getUserProfile = async (req, res) => {
     try {
         const userId = req.user._id; // take affiliate id from request
         const user = await AstroUser.findById(userId, { password: 0 });
-        return res.status(200).json({ Astro_User : user }); // return response
+        return res.status(200).json({ Astro_User: user }); // return response
     } catch (error) {
         return res.status(400).json({ Error: error.message });
     }
@@ -144,10 +139,10 @@ const deleteUserProfile = async (req, res) => {
             return res.status(402).json({ Message: "Wrong password" });
         }
 
-       const deletedUser = await AstroUser.findByIdAndDelete(user._id); // find and delete user
+        const deletedUser = await AstroUser.findByIdAndDelete(user._id); // find and delete user
 
         res.clearCookie("AccessToken"); // clear cookies for logout
-        return res.status(200).json({ Message: "Astro user has been sucessfully deleted", deleted_User : deletedUser }); // return response
+        return res.status(200).json({ Message: "Astro user has been sucessfully deleted", deleted_User: deletedUser }); // return response
     } catch (error) {
         return res.status(400).json({ Error: error.message });
     }
@@ -162,7 +157,7 @@ const changeUserPassword = async (req, res) => {
             return res.status(401).json({ Message: "Please enter all fields" });
         }
 
-        const user = await AstroUser.findById(req.user._id);
+        const user = await AstroUser.findById(req.user._id); // get user
 
 
         // compare password
@@ -216,4 +211,4 @@ const logoutUser = (req, res) => {
     }
 }
 
-module.exports = {registerUser,updateUserProfile, getUserProfile, loginUser, logoutUser, changeUserPassword, deleteUserProfile};
+module.exports = { registerUser, updateUserProfile, getUserProfile, loginUser, logoutUser, changeUserPassword, deleteUserProfile };
