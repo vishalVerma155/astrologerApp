@@ -7,6 +7,11 @@ const astroUserSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  placeOfBirth: {
+    type: String,
+    required: true,
+    trim: true
+  },
   gender: {
     type: String,
     enum: ['Male', 'Female', 'Other'], 

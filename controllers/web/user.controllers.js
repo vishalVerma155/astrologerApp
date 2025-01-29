@@ -6,10 +6,10 @@ const generateJWT = require('../../utils/jwt.js')
 const registerUser = async (req, res) => {
 
     try {
-        const { fullName, email, phoneNumber, password, gender, dateOfBirth, birthTime } = req.body;
+        const { fullName, email, phoneNumber, password, gender, dateOfBirth, birthTime, placeOfBirth } = req.body;
 
         // check blank fields
-        const isBlank = [fullName, email, phoneNumber, password, gender, dateOfBirth, birthTime].some(field => field.trim() === "");
+        const isBlank = [fullName, email, phoneNumber, password, gender, dateOfBirth, birthTime, placeOfBirth].some(field => field.trim() === "");
 
 
         if (isBlank) {
@@ -33,7 +33,8 @@ const registerUser = async (req, res) => {
             password: hashedPassword,
             gender,
             dateOfBirth,
-            birthTime
+            birthTime,
+            placeOfBirth
         })
 
         // save user
@@ -144,7 +145,7 @@ const deleteUserProfile = async (req, res) => {
         res.clearCookie("AccessToken"); // clear cookies for logout
 
         return res.status(200).json({ Message: "Astro user has been sucessfully deleted", deleted_User: deletedUser }); // return response
-        
+
     } catch (error) {
         return res.status(400).json({ Error: error.message });
     }
