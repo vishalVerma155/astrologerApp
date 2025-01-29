@@ -20,7 +20,7 @@ const registerUser = async (req, res) => {
         const isUserExisted = await AstroUser.findOne({ $or: [{ phoneNumber }, { email }] });
 
         if (isUserExisted) {
-            return res.status(401).json({ Message: "User is already existed. Please login or choose other email addres or phone number" });
+            return res.status(401).json({ Message: "User is already existed. Please login or choose other email address or phone number" });
         }
 
 
@@ -122,8 +122,7 @@ const getUserProfile = async (req, res) => {
     }
 }
 
-// // delete user profile
-
+// delete user profile
 const deleteUserProfile = async (req, res) => {
     try {
         const userId = req.user?._id; // get user id
@@ -134,7 +133,8 @@ const deleteUserProfile = async (req, res) => {
             return res.status(404).json({ Message: "User not found" });
         }
 
-        const isPasswordCorrect = await comparePassword(password, user.password);
+        const isPasswordCorrect = await comparePassword(password, user.password); // compare password
+
         if (!isPasswordCorrect) {
             return res.status(402).json({ Message: "Wrong password" });
         }
@@ -142,7 +142,9 @@ const deleteUserProfile = async (req, res) => {
         const deletedUser = await AstroUser.findByIdAndDelete(user._id); // find and delete user
 
         res.clearCookie("AccessToken"); // clear cookies for logout
+
         return res.status(200).json({ Message: "Astro user has been sucessfully deleted", deleted_User: deletedUser }); // return response
+        
     } catch (error) {
         return res.status(400).json({ Error: error.message });
     }
